@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prediction Detail - {{ record.name_surname }}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .profile-card {
+        max-width: 700px;
+        margin: 50px auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        background: white;
+      }
+      .profile-header {
+        background: linear-gradient(135deg, #6366f1, #818cf8);
+        color: white;
+        padding: 30px;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        text-align: center;
+      }
+      .profile-body {
+        padding: 25px;
+      }
+      .profile-body h5 {
+        color: #4f46e5;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e9ecef;
+      }
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      .btn-back {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="profile-card">
+      <div class="profile-header">
+        <h2>{{ record.name_surname }}</h2>
+        <p class="mb-0">
+          <strong>Status:</strong>
+          {% if record.approved %}
+          <span class="badge bg-success">Approved</span>
+          {% else %}
+          <span class="badge bg-danger">Rejected</span>
+          {% endif %}
+        </p>
+        <p><strong>Probability:</strong> {{ record.probability }}%</p>
+      </div>
+      <div class="profile-body">
+        <h5>Loan Details</h5>
+        <div class="info-row"><span>Loan Amount:</span><span>{{ record.loan_amount }} €</span></div>
+        <div class="info-row"><span>Interest Rate:</span><span>{{ record.interest_rate }}%</span></div>
+        <div class="info-row"><span>Loan Purpose:</span><span>{{ record.loan_purpose }}</span></div>
+        <div class="info-row"><span>Grade/Subgrade:</span><span>{{ record.grade_subgrade }}</span></div>
+
+        <h5 class="mt-4">Applicant Information</h5>
+        <div class="info-row"><span>Annual Income:</span><span>{{ record.annual_income }} €</span></div>
+        <div class="info-row"><span>Debt-to-Income Ratio:</span><span>{{ record.debt_to_income_ratio }}</span></div>
+        <div class="info-row"><span>Credit Score:</span><span>{{ record.credit_score }}</span></div>
+        <div class="info-row"><span>Gender:</span><span>{{ record.gender }}</span></div>
+        <div class="info-row"><span>Marital Status:</span><span>{{ record.marital_status }}</span></div>
+        <div class="info-row"><span>Education Level:</span><span>{{ record.education_level }}</span></div>
+        <div class="info-row"><span>Employment Status:</span><span>{{ record.employment_status }}</span></div>
+
+        <h5 class="mt-4">Metadata</h5>
+        <div class="info-row"><span>Applied At:</span><span>{{ record.created_at }}</span></div>
+
+        <div class="row">
+        <div class="text-center btn-back">
+          <button onclick="window.history.back()" class="btn btn-outline-primary">← Back</button>
+        </div>
+        <div class="text-end btn-back">
+          <a href="{% url 'predict_form' %}" class="btn btn-outline-success">New Loan Application</a>
+        </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
