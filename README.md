@@ -1,129 +1,169 @@
+# Loan Payback Predictor — Voice Autofill + ML Inference
+**Django · FastAPI · Gemini · Docker · Cloud Run**
 
-### FrontEnd Webapp and FastAPI-backaend Webapp
+End-to-end prototype of a loan repayment prediction web application.
 
-so we have 2 webapps. in the ```app_form``` folder is the frontend webform to enter the data
-in ```backend``` is the Flask API
+The application combines:
+- a **Django frontend** for data entry and result display,
+- a **FastAPI backend** for ML inference and voice processing,
+- the **Gemini API** to extract structured loan data from a short voice recording.
 
-Here how to start both locally:
-#### frontend app:
-listens on 8000
-``` bash
-cd app_form
-docker compose up -d --build
+The system was deployed and tested on Google Cloud Run.
+To avoid ongoing cloud costs, the live demo is not permanently running, but the full setup is reproducible locally.
+
+---
+
+## What the application does
+
+1. The user records a short voice note describing their loan situation
+2. The audio is sent to the backend
+3. Gemini converts the audio into structured JSON
+4. The frontend form is automatically filled
+5. The user submits the form
+6. The backend returns a loan payback prediction
+
+The focus of this project is **applied machine learning and system integration**.
+
+---
+
+## High-level architecture
+
 ```
-#### backend flaskapi app:
-listens on 8001
-``` bash
+Browser (HTML + JS)
+        |
+        |  POST /voice-form (audio)
+        v
+FastAPI backend
+        |
+        |  Gemini API (audio → structured JSON)
+        v
+Autofilled form (Django)
+        |
+        |  POST /predict (JSON payload)
+        v
+ML inference → prediction → UI
+```
+
+---
+
+## Services
+
+### Frontend — Django (`app_form/`)
+- Renders the loan application form
+- Displays prediction results
+- Calls backend `/predict` server-side
+- Calls backend `/voice-form` from browser JavaScript
+
+### Backend — FastAPI (`backend/`)
+- `POST /predict`: returns loan payback prediction
+- `POST /voice-form`: accepts audio, returns structured fields extracted by Gemini
+
+---
+
+## Input fields
+
+The system works with the following information:
+
+**Financial**
+- `annual_income`
+- `debt_to_income_ratio`
+- `credit_score`
+- `loan_amount`
+- `interest_rate`
+- `grade_subgrade`
+
+**Demographics**
+- `gender`
+- `marital_status`
+- `education_level`
+- `employment_status`
+
+**Loan**
+- `loan_purpose`
+
+**UI-only**
+- `name_surname` (also extracted from voice)
+
+---
+
+## Run locally (Docker)
+
+You need to run **two services**.
+
+### 1) Backend (FastAPI) — port `8001`
+
+Create an environment file:
+
+`backend/.env`
+```env
+GEMINI_API_KEY=your_key_here
+```
+
+Start the backend:
+
+```bash
 cd backend
 docker compose up -d --build
-```
-## Loan Payback Prediction System
-Build a predictive model that accurately classifies loan repayment likelihood using supervised learning techniques.
-
-Feature Variables:
-" Identifiers: id.
-  * Financial Metrics:
-
- annual_income,
- debt_to_income_ratio,
-  credit_score,
-  loan_amount,
-   interest_rate,
-   grade_subgrade.
-*  Demographics:
-gender,
-marital_status,
- education_level,
- employment_status
-*  Loan Information:
-loan_purpose,
-*  Target Variable:
-loan_paid_back (binary: 1 = repaid, 0 = default)
-
-
-
-#### Working with github branches:
-
-# Git Workflow for a Small Team (Remote Branching + Pull Requests)
-
-## 1. Update your local main
-
-``` bash
-git checkout main
-git pull origin main
+docker compose logs -f
 ```
 
-## 2. Create a local feature branch
+Test:
+- http://localhost:8001/docs
 
-``` bash
-git checkout -b feature/foo
+---
+
+### 2) Frontend (Django) — port `8000`
+
+Start the frontend:
+
+```bash
+cd app_form
+docker compose up -d --build
+docker compose logs -f
 ```
 
-Now you're on your isolated branch.
+Open in browser:
+- http://localhost:8000/predict/
 
-## 3. Do your work
+---
 
-``` bash
-# edit files...
-git add .
-git commit -m "Implement feature foo"
+## Reliability notes
+
+- The Gemini API can occasionally return `503 UNAVAILABLE` (model overload)
+- The backend implements retries and graceful error handling
+- The system is designed to fail safely and inform the user
+
+---
+
+## Project structure
+
+```
+app_form/     # Django frontend
+backend/      # FastAPI backend (inference + voice processing)
+models/       # model scripts / artifacts
+notebooks/    # experimentation and exploration
+raw_data/     # dataset samples
 ```
 
-## 4. Push your feature branch to GitHub (instead of merging locally)
+---
 
-Branches get synchronized remotely, and the merge is done via Pull
-Request.
+## Deployment
 
-``` bash
-git push -u origin feature/foo
-```
+The application was deployed as two independent services on **Google Cloud Run**:
+- Django frontend service
+- FastAPI backend service
 
-### 4b. Open a Pull Request (PR)
+The deployment setup is documented in the repository and can be reproduced in a few commands.
+The services are currently shut down to avoid unnecessary cloud costs.
 
--   Go to GitHub\
--   Click **"Compare & pull request"**\
--   Add description\
--   Assign reviewers
+---
 
-### 4c. Merge the PR on GitHub
+## Why this project
 
-When approved, press **"Merge Pull Request" → "Confirm merge"**.
-
-## 5. Sync your local main after the merge
-
-``` bash
-git checkout main
-git pull origin main
-```
-
-## 6. (Optional) Delete the feature branch
-
-### Delete remote branch
-
-``` bash
-git push origin --delete feature/foo
-```
-
-### Delete local branch
-
-``` bash
-git branch -d feature/foo
-```
-
-## Summary of the Remote-Based Workflow
-
-  Step              Local?   Remote?      Command
-  ----------------- -------- ------------ ----------------------------------
-  Create branch     local    ---          `git checkout -b feature/foo`.
-
-  Work + commit     local    ---          `git add .`, `git commit`.
-
-  Push branch       ---      remote       `git push -u origin feature/foo`.
-
-  PR + review       ---      remote       GitHub UI.
-
-  Merge to main     ---      remote       GitHub UI.
-
-  Sync local main   local    via remote   `git pull origin main`.
-
-  Cleanup           both     both         deletion commands
+This project demonstrates:
+- Designing an end-to-end ML-powered web application
+- Using LLMs for structured data extraction (voice → JSON)
+- Separating frontend, inference, and orchestration concerns
+- Deploying stateless services on a serverless platform
+- Handling real-world issues (CORS, CSRF, API limits, retries)
+- Making cost-aware engineering decisions
