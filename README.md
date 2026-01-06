@@ -1,4 +1,8 @@
 # Loan Payback Predictor — Voice Autofill + ML Inference
+
+▶️ **2-minute demo video (unlisted YouTube):**
+https://www.youtube.com/watch?v=QD0Szibbodg
+
 **Django · FastAPI · Gemini · Docker · Cloud Run**
 
 End-to-end prototype of a loan repayment prediction web application.
@@ -22,7 +26,13 @@ To avoid ongoing cloud costs, the live demo is not permanently running, but the 
 5. The user submits the form
 6. The backend returns a loan payback prediction
 
-The focus of this project is **applied machine learning and system integration**.
+### Application screenshots
+
+**Frontend (voice input & autofilled form)**
+![Frontend screenshot](images/frontend.png)
+
+**Prediction output**
+![Prediction screenshot](images/prediction.png)
 
 ---
 
@@ -123,7 +133,7 @@ docker compose logs -f
 ```
 
 Open in browser:
-- http://localhost:8000/predict/
+- http://localhost:8000/
 
 ---
 

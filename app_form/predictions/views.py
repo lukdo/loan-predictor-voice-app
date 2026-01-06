@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from .services.api_client import get_prediction_from_api
+from .services.api_client import predict
 from .predict_form import PredictForm
 from .models import PredictionRecord
 from django.views.generic import ListView
@@ -41,7 +41,7 @@ class PredictView(View):
 
         if form.is_valid():
             payload = form.cleaned_data
-            api_result = get_prediction_from_api(payload)
+            api_result = predict(payload)
 
             if api_result and "approved" in api_result and "probability" in api_result:
                 prediction_result = {

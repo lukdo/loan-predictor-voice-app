@@ -1,4 +1,5 @@
-const BACKEND_BASE_URL = "https://loan-backend-849346508536.europe-west1.run.app"; // adjust if needed
+// const BACKEND_BASE_URL = "https://loan-backend-849346508536.europe-west1.run.app"; // adjust if needed
+const BACKEND_BASE_URL = "http://localhost:8001";
 
 let mediaRecorder;
 let audioChunks = [];

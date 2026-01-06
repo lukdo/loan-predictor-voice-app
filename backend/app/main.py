@@ -31,7 +31,7 @@ app = FastAPI()
 # --- CORS so Django frontend can call this API ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # you can restrict later
+    allow_origins=["*"],  # can restrict if needed
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
